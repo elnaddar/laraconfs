@@ -1,10 +1,11 @@
 models:
   Conference:
-    name: string
-    description: string
+    name: string:60
+    description: text
     start_date: datetime
     end_date: datetime
-    status: string
+    status: enum:draft,published,archived default:draft
+    # is_published: boolean default:false
     region: string
     venue_id: id
     relationships:

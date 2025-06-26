@@ -26,7 +26,7 @@ class ConferenceFactory extends Factory
             'description' => fake()->text(),
             'start_date' => fake()->dateTime(),
             'end_date' => fake()->dateTime(),
-            'status' => fake()->word(),
+            'status' => fake()->randomElement(["draft","published","archived"]),
             'region' => fake()->word(),
             'venue_id' => Venue::factory(),
         ];

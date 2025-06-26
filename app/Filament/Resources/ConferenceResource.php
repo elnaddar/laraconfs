@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Enums\Status;
 use App\Filament\Resources\ConferenceResource\Pages;
 use App\Filament\Resources\ConferenceResource\RelationManagers;
 use App\Models\Conference;
@@ -24,15 +25,23 @@ class ConferenceResource extends Resource
         return $form
             ->schema([
                 Forms\Components\TextInput::make('name')
-                    ->required(),
-                Forms\Components\TextInput::make('description')
-                    ->required(),
+                    ->required()
+                    ->label('Conference Name')
+                    ->hint('Any thing can be here')
+                    ->hintIcon('heroicon-o-information-circle')
+                    ->helperText('eg. EgyCon')
+                    ->columnSpanFull(),
+                Forms\Components\MarkdownEditor::make('description')
+                    ->required()
+                    ->columnSpanFull(),
                 Forms\Components\DateTimePicker::make('start_date')
-                    ->required(),
+                    ->required()
+                    ->native(false),
                 Forms\Components\DateTimePicker::make('end_date')
                     ->required(),
-                Forms\Components\TextInput::make('status')
-                    ->required(),
+                Forms\Components\Select::make('status')
+                    ->required()
+                    ->options(Status::class),
                 Forms\Components\TextInput::make('region')
                     ->required(),
                 Forms\Components\Select::make('venue_id')
@@ -56,7 +65,8 @@ class ConferenceResource extends Resource
                     ->dateTime()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('status')
-                    ->searchable(),
+                    ->searchable()
+                    ->badge(),
                 Tables\Columns\TextColumn::make('region')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('venue.name')
