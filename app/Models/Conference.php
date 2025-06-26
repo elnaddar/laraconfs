@@ -122,13 +122,17 @@ class Conference extends Model
                                 ->options(Region::class)
                                 // ->enum(Region::class)
                                 ->required()
-                                ->live(),
+                                ->live()
+                                ->afterStateUpdated(function (Forms\Set $set) {
+                                    $set('venue_id', null);
+                                }),
                             Forms\Components\Select::make('venue_id')
                                 ->relationship(
                                     'venue',
                                     'name',
                                     function (Builder $query, Forms\Get $get) {
-                                        return $query->where('region', '=', $get('region'));
+                                        $data = $query->where('region', '=', $get('region'));
+                                        return $data;
                                     }
                                 )
                                 ->searchable()
@@ -136,7 +140,6 @@ class Conference extends Model
                                 ->createOptionForm(Venue::getForm())
                                 ->editOptionForm(Venue::getForm())
                                 ->required(),
-
                         ])
                 ]),
         ];
