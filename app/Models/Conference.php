@@ -4,10 +4,15 @@ namespace App\Models;
 
 use App\Enums\Region;
 use App\Enums\Status;
+use App\Models\Speaker;
+use App\Models\Talk;
+use App\Models\Venue;
+use Filament\Forms;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Builder;
 
 class Conference extends Model
 {
@@ -58,5 +63,71 @@ class Conference extends Model
     public function talks(): BelongsToMany
     {
         return $this->belongsToMany(Talk::class);
+    }
+
+    public static function getForm()
+    {
+        return [
+            Forms\Components\Tabs::make('Conference')
+                ->schema([
+                    Forms\Components\Tabs\Tab::make('Info')
+                        ->schema([
+                            Forms\Components\Section::make('Main Information')
+                                ->description('Some description here')
+                                ->collapsible()
+                                ->schema([
+                                    Forms\Components\TextInput::make('name')
+                                        ->required()
+                                        ->label('Conference Name')
+                                        ->hint('Any thing can be here')
+                                        ->hintIcon('heroicon-o-information-circle')
+                                        ->helperText('eg. EgyCon')
+                                        ->columnSpanFull(),
+                                    Forms\Components\MarkdownEditor::make('description')
+                                        ->required()
+                                        ->columnSpanFull(),
+                                ]),
+                            Forms\Components\Section::make('Date Info')
+                                ->description('Some description here')
+                                ->collapsible()
+                                ->columns(2)
+                                ->schema([
+                                    Forms\Components\DateTimePicker::make('start_date')
+                                        ->required()
+                                        ->native(false),
+                                    Forms\Components\DateTimePicker::make('end_date')
+                                        ->required()
+                                ]),
+                            Forms\Components\Fieldset::make('Status')
+                                ->schema([
+                                    Forms\Components\Select::make('status')
+                                        ->required()
+                                        ->options(Status::class)
+                                ])
+                        ]),
+                    Forms\Components\Tabs\Tab::make('Location')
+                        ->schema([
+                            Forms\Components\Select::make('region')
+                                ->options(Region::class)
+                                // ->enum(Region::class)
+                                ->required()
+                                ->live(),
+                            Forms\Components\Select::make('venue_id')
+                                ->relationship(
+                                    'venue',
+                                    'name',
+                                    function (Builder $query, Forms\Get $get) {
+                                        return $query->where('region', '=', $get('region'));
+                                    }
+                                )
+                                ->searchable()
+                                ->preload()
+                                ->createOptionForm(Venue::getForm())
+                                ->editOptionForm(Venue::getForm())
+                                ->required(),
+
+                        ])
+                ]),
+        ];
     }
 }
