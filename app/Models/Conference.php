@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\Region;
 use App\Enums\Status;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -39,7 +40,8 @@ class Conference extends Model
             'start_date' => 'datetime',
             'end_date' => 'datetime',
             'venue_id' => 'integer',
-            'status' => Status::class
+            'status' => Status::class,
+            'region' => Region::class
         ];
     }
 

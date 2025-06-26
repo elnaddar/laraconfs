@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\Region;
 use App\Enums\Status;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -19,7 +20,7 @@ return new class extends Migration
             $table->dateTime('start_date');
             $table->dateTime('end_date');
             $table->enum('status', Status::values())->default(Status::Draft);
-            $table->string('region');
+            $table->enum('region', Region::values());
             $table->foreignId('venue_id');
             $table->timestamps();
         });
