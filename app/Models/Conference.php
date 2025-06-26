@@ -68,6 +68,17 @@ class Conference extends Model
     public static function getForm()
     {
         return [
+            Forms\Components\Actions::make([
+                Forms\Components\Actions\Action::make('factory')
+                    ->label('Generate Dummy Data')
+                    ->visible(function ($operation) {
+                        return $operation === 'create' && app()->environment('local');
+                    })
+                    ->action(function ($livewire) {
+                        $data = Conference::factory()->make(['venue_id' => null])->toArray();
+                        $livewire->form->fill($data);
+                    })
+            ]),
             Forms\Components\Tabs::make('Conference')
                 ->schema([
                     Forms\Components\Tabs\Tab::make('Info')
