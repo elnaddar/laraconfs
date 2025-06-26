@@ -23,6 +23,11 @@ class SpeakerResource extends Resource
     {
         return $form
             ->schema([
+                Forms\Components\FileUpload::make('avatar')
+                    ->avatar()
+                    ->imageEditor()
+                    ->maxSize(2 * 1024 * 1024)
+                    ->directory('avatars'),
                 Forms\Components\TextInput::make('name')
                     ->required(),
                 Forms\Components\TextInput::make('email')

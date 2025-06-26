@@ -20,6 +20,7 @@ class Speaker extends Model
         'email',
         'bio',
         'twitter_handle',
+        'avatar'
     ];
 
     /**

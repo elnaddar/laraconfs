@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('email');
             $table->text('bio');
             $table->string('twitter_handle');
+            $table->text('avatar')->nullable();
             $table->timestamps();
         });
     }
