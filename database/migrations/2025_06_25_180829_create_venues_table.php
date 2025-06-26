@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\Region;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -17,6 +18,7 @@ return new class extends Migration
             $table->string('city');
             $table->string('country');
             $table->string('postal_code');
+            $table->enum('region', Region::values());
             $table->timestamps();
         });
     }

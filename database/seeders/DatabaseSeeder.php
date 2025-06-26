@@ -2,7 +2,9 @@
 
 namespace Database\Seeders;
 
+use App\Models\Conference;
 use App\Models\User;
+use App\Models\Venue;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -20,5 +22,8 @@ class DatabaseSeeder extends Seeder
             'email' => 'admin@admin.com',
             'password' => '123123'
         ]);
+
+        $venues = Venue::factory(200)->create();
+        $confs = Conference::factory(10)->recycle($venues)->create();
     }
 }
