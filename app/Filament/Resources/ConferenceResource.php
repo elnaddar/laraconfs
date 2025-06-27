@@ -12,6 +12,8 @@ use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Actions\Action;
+use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -67,8 +69,19 @@ class ConferenceResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
-            ])
+                Tables\Filters\SelectFilter::make('venue.name')
+                    ->relationship('venue', 'name', function ($query) {
+                        return $query->whereHas('conferences');
+                    })
+                    ->preload()
+                    ->multiple()
+            ], layout: FiltersLayout::Modal)
+            ->deferFilters()
+            ->persistFiltersInSession()
+            ->filtersTriggerAction(function (Action $action) {
+                return $action->button()->label('Filters');
+            })
+            // ->deselectAllRecordsWhenFiltered(false)
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),

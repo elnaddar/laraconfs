@@ -6,6 +6,7 @@ use Filament\Support\Colors\Color;
 use Filament\Support\Contracts\HasColor;
 use Filament\Support\Contracts\HasIcon;
 use Filament\Support\Contracts\HasLabel;
+use Illuminate\Database\Eloquent\Builder;
 
 enum Status: string implements HasLabel, HasColor, HasIcon
 {
@@ -43,5 +44,10 @@ enum Status: string implements HasLabel, HasColor, HasIcon
             self::Published => 'heroicon-o-eye',
             self::Archived => 'heroicon-o-archive-box',
         };
+    }
+
+    public function getTab()
+    {
+        return fn(Builder $query) => $query->where('status', $this);
     }
 }
