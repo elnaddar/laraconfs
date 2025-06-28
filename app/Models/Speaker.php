@@ -39,4 +39,9 @@ class Speaker extends Model
     {
         return $this->belongsToMany(Conference::class);
     }
+
+    public function talks()
+    {
+        return $this->hasMany(Talk::class);
+    }
 }
