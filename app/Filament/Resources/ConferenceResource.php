@@ -10,13 +10,16 @@ use App\Models\Conference;
 use App\Models\Venue;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class ConferenceResource extends Resource
@@ -83,13 +86,70 @@ class ConferenceResource extends Resource
             })
             // ->deselectAllRecordsWhenFiltered(false)
             ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\ActionGroup::make([
+                    Tables\Actions\Action::make('Publish')
+                        ->color(Status::Published->getColor())
+                        ->icon(Status::Published->getIcon())
+                        ->visible(function (Conference $record) {
+                            return $record->status !== (Status::Published);
+                        })
+                        ->action(function (Conference $record) {
+                            $record->publish();
+                        })
+                        ->after(function () {
+                            Notification::make()
+                                ->duration(2000)
+                                ->success()
+                                ->title('Published sucessfully')
+                                ->body('it\'s published successfully')
+                                ->send();
+                        }),
+
+                    Tables\Actions\Action::make('Archive')
+                        ->color(Status::Archived->getColor())
+                        ->icon(Status::Archived->getIcon())
+                        ->visible(function (Conference $record) {
+                            return $record->status !== Status::Archived;
+                        })
+                        ->action(function (Conference $record) {
+                            $record->archive();
+                        })
+                        ->requiresConfirmation()
+                        ->after(function () {
+                            Notification::make()
+                                ->duration(2000)
+                                ->warning()
+                                ->title('Archived sucessfully')
+                                ->body('it\'s archived successfully')
+                                ->send();
+                        }),
+                    Tables\Actions\ViewAction::make(),
+                    Tables\Actions\EditAction::make()
+                        ->slideOver(),
+                ])
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\BulkAction::make('Publish Selected')
+                        ->color(Status::Published->getColor())
+                        ->icon(Status::Published->getIcon())
+                        ->requiresConfirmation()
+                        ->action(function (Collection $records) {
+                            $records->each->publish();
+                        }),
+                    Tables\Actions\BulkAction::make('Archive Selected')
+                        ->color(Status::Archived->getColor())
+                        ->icon(Status::Archived->getIcon())
+                        ->requiresConfirmation()
+                        ->action(function (Collection $records) {
+                            $records->each->archive();
+                        }),
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
+            ])
+            ->headerActions([
+                Tables\Actions\Action::make('Nonesense Action')
+                    ->tooltip('This will do nothing')
             ]);
     }
 
@@ -106,7 +166,7 @@ class ConferenceResource extends Resource
             'index' => Pages\ListConferences::route('/'),
             'create' => Pages\CreateConference::route('/create'),
             'view' => Pages\ViewConference::route('/{record}'),
-            'edit' => Pages\EditConference::route('/{record}/edit'),
+            // 'edit' => Pages\EditConference::route('/{record}/edit'),
         ];
     }
 }

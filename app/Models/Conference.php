@@ -65,6 +65,19 @@ class Conference extends Model
         return $this->belongsToMany(Talk::class);
     }
 
+    public function publish(): void
+    {
+        $this->status = Status::Published;
+        $this->save();
+    }
+
+
+    public function archive(): void
+    {
+        $this->status = Status::Archived;
+        $this->save();
+    }
+
     public static function getForm()
     {
         return [
