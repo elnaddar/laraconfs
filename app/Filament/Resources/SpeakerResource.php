@@ -49,7 +49,8 @@ class SpeakerResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\ImageColumn::make('avatar')
-                    ->circular(),
+                    ->circular()
+                    ->defaultImageUrl(fn($record): string => 'https://placehold.co/100x100/e2e8f0/64748b?text=' . $record->name[0]),
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('email')
@@ -90,8 +91,9 @@ class SpeakerResource extends Resource
                 ->schema([
                     // Column 1: Avatar
                     Infolists\Components\ImageEntry::make('avatar')
-                        ->label('Avatar')
+                        ->label('')
                         ->circular() // Makes the avatar image round for a nicer look
+                        ->defaultImageUrl(fn($record): string => 'https://placehold.co/100x100/e2e8f0/64748b?text=' . $record->name[0])
                         ->columnSpan(1),
 
                     // Column 2: User Details
